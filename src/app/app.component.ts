@@ -3,6 +3,7 @@ import { Talk } from './talk.model';
 import { MatDialog } from '@angular/material/dialog';
 import { TalkDialogComponent } from './components/talk-dialog/talk-dialog.component';
 import { TalkDialogResult } from './components/talk-dialog/dialog-data.model';
+import { TalkService } from './talk.service';
 
 @Component({
   selector: 'app-root',
@@ -10,28 +11,13 @@ import { TalkDialogResult } from './components/talk-dialog/dialog-data.model';
   styleUrl: './app.component.css',
 })
 export class AppComponent implements OnInit {
-  talks: Talk[] = [
-    {
-      title: 'Caso de uso real da IA e AWS para classificação de documentos na área da Saúde',
-      speaker: 'Dan Rezende',
-    },
-    {
-      title: 'GitHub Actions e AWS',
-      speaker: 'José Vicente',
-    },
-    {
-      title: 'Server-Driven UI: Engolindo Flutter e React Native com nativo',
-      speaker: 'pedrofsn',
-    },
-    {
-      title: 'Angular + Firebase: Construindo aplicações robustas e escaláveis',
-      speaker: 'Derci Santos',
-    },
-  ];
-
-  constructor(private dialog: MatDialog) {}
+  constructor(private dialog: MatDialog, private talkService: TalkService) {}
 
   ngOnInit(): void {}
+
+  getTalks(): Talk[] {
+    return this.talkService.getAll();
+  }
 
   addNewTalk() {
     const dialogRef = this.dialog.open(TalkDialogComponent, {
@@ -42,7 +28,7 @@ export class AppComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe((result: TalkDialogResult) => {
       if (result && result.talk) {
-        this.talks.push(result.talk);
+        this.talkService.add(result.talk);
       }
     });
   }
@@ -57,12 +43,10 @@ export class AppComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe((result: TalkDialogResult) => {
       if (result) {
-        const indexOf = this.talks.indexOf(talk);
-        if (result?.deleted) {
-          this.talks.splice(indexOf, 1);
-        }
-        if (result?.talk) {
-          this.talks.splice(indexOf, 1, result.talk);
+        if (result.deleted) {
+          this.talkService.delete(result.talk!);
+        } else {
+          this.talkService.update(result.talk!);
         }
       }
     });
