@@ -1,47 +1,51 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Talk } from './talk.model';
+import {
+  addDoc,
+  collection,
+  CollectionReference,
+  deleteDoc,
+  doc,
+  Firestore, getDocs,
+  setDoc
+} from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TalkService {
-  talks: Talk[] = [
-    {
-      title:
-        'Caso de uso real da IA e AWS para classificação de documentos na área da Saúde',
-      speaker: 'Dan Rezende',
-    },
-    {
-      title: 'GitHub Actions e AWS',
-      speaker: 'José Vicente',
-    },
-    {
-      title: 'Server-Driven UI: Engolindo Flutter e React Native com nativo',
-      speaker: 'pedrofsn',
-    },
-    {
-      title: 'Angular + Firebase: Construindo aplicações robustas e escaláveis',
-      speaker: 'Derci Santos',
-    },
-  ];
+  private firestore: Firestore = inject(Firestore);
+  private collectionRef: CollectionReference;
 
-  constructor() {}
-
-  getAll(): Talk[] {
-    return this.talks;
+  constructor() {
+    this.collectionRef = collection(this.firestore, 'talks');
   }
 
-  add(talk: Talk) {
-    this.talks.push(talk);
+  async getAll(): Promise<Talk[]> {
+    const snapshot = await getDocs(this.collectionRef);
+    return snapshot.docs.map((doc) => {
+      return {
+        id: doc.id,
+        ...doc.data(),
+      } as Talk;
+    });
   }
 
-  update(talk: Talk) {
-    const indexOf = this.talks.indexOf(talk);
-    this.talks.splice(indexOf, 1, talk);
+  add(talk: Talk): Promise<any> {
+    return addDoc(this.collectionRef, {
+      title: talk.title,
+      speaker: talk.speaker
+    });
   }
 
-  delete(talk: Talk) {
-    const indexOf = this.talks.indexOf(talk);
-    this.talks.splice(indexOf, 1);
+  update(talk: Talk): Promise<any> {
+    return setDoc(doc(this.collectionRef, talk.id), {
+      title: talk.title,
+      speaker: talk.speaker,
+    });
+  }
+
+  delete(talk: Talk): Promise<void> {
+    return deleteDoc(doc(this.collectionRef, talk.id));
   }
 }
