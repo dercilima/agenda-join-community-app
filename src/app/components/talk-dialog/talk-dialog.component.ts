@@ -1,12 +1,8 @@
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Talk } from '../../talk.model';
 import { Component, Inject, OnInit } from '@angular/core';
-import { TalkDialogData } from './dialog-data.model';
-import {
-  FormControl,
-  FormGroup,
-  Validators
-} from '@angular/forms';
+import { TalkDialogData, TalkDialogResult } from './dialog-data.model';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-talk-dialog',
@@ -21,10 +17,9 @@ export class TalkDialogComponent implements OnInit {
   });
 
   constructor(
-    private dialogRef: MatDialogRef<TalkDialogComponent>,
+    private dialogRef: MatDialogRef<TalkDialogComponent, TalkDialogResult>,
     @Inject(MAT_DIALOG_DATA) public data: TalkDialogData
-  ) {
-  }
+  ) {}
 
   ngOnInit(): void {
     if (this.data?.talk) {
@@ -39,8 +34,15 @@ export class TalkDialogComponent implements OnInit {
   save() {
     if (this.form.valid) {
       this.dialogRef.close({
-        talk: this.form.value as Talk
-      })
+        talk: this.form.value as Talk,
+      });
     }
+  }
+
+  delete() {
+    this.dialogRef.close({
+      talk: this.data.talk,
+      deleted: true,
+    });
   }
 }

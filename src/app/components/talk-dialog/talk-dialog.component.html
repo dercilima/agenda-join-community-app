@@ -16,10 +16,9 @@
   <button
     *ngIf="data.enableDelete"
     mat-button
+    (click)="delete()"
     color="warn"
-    aria-label="Delete"
-    [mat-dialog-close]="{ deleted: true }"
-  >
+    aria-label="Delete">
     Excluir
   </button>
   <div class="buttons">
