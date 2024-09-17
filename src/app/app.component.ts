@@ -11,12 +11,18 @@ import { TalkService } from './talk.service';
   styleUrl: './app.component.css',
 })
 export class AppComponent implements OnInit {
+  talks: Talk[] = [];
+
   constructor(private dialog: MatDialog, private talkService: TalkService) {}
 
-  ngOnInit(): void {}
+  ngOnInit() {
+    this.loadTalks();
+  }
 
-  getTalks(): Talk[] {
-    return this.talkService.getAll();
+  private loadTalks() {
+    this.talkService.getAll().then((talks) => {
+      this.talks = talks;
+    });
   }
 
   addNewTalk() {
@@ -28,7 +34,7 @@ export class AppComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe((result: TalkDialogResult) => {
       if (result && result.talk) {
-        this.talkService.add(result.talk);
+        this.talkService.add(result.talk).then(() => this.loadTalks());
       }
     });
   }
@@ -44,9 +50,9 @@ export class AppComponent implements OnInit {
     dialogRef.afterClosed().subscribe((result: TalkDialogResult) => {
       if (result) {
         if (result.deleted) {
-          this.talkService.delete(result.talk!);
+          this.talkService.delete(result.talk!).then(() => this.loadTalks());
         } else {
-          this.talkService.update(result.talk!);
+          this.talkService.update(result.talk!).then(() => this.loadTalks());
         }
       }
     });
