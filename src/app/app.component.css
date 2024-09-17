@@ -8,8 +8,19 @@ mat-toolbar {
   height: 80px;
 }
 
-mat-toolbar > span {
-  margin-left: 16px;
+.toolbar-content {
+  display: flex;
+  flex-direction: column;
+  margin-left: 24px;
+}
+
+.title {
+  font-weight: 600;
+}
+
+.subtitle {
+  font-size: 14px;
+  font-weight: 400;
 }
 
 .content {
@@ -29,4 +40,24 @@ button {
   position: absolute;
   bottom: 24px;
   right: 24px;
+}
+
+.hidden {
+  display: none;
+}
+
+@media screen and (min-width: 768px) {
+  .hidden {
+    display: flex;
+  }
+
+  .toolbar-content {
+    flex-direction: row;
+    gap: 12px;
+  }
+
+  .subtitle {
+    font-size: 20px;
+    font-weight: 600;
+  }
 }
